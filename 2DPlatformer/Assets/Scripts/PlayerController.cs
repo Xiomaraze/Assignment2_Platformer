@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -15,12 +16,17 @@ public class PlayerController : MonoBehaviour
     Vector2 playerInput = Vector2.zero; //im specifically moving the player input variable from inside fixedupdate to here to keep consistent track of the last input the player used. sorry keely
     public float Speed;
     float gravityDrag = 4f;
+    List<RaycastHit2D> contacts = new List<RaycastHit2D>();
+    //public GameObject groundObject; this was just testing to see what the tag for the ground came out as to avoid spelling mistakes
+    //Rigidbody2D ground;
 
     // Start is called before the first frame update
     void Start()
     {
         rb2 = gameObject.GetComponent<Rigidbody2D>();
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
+        //ground = groundObject.GetComponent<Rigidbody2D>();
+        //Debug.Log(ground.tag);
     }
 
     // Update is called once per frame
@@ -71,7 +77,26 @@ public class PlayerController : MonoBehaviour
     }
     public bool IsGrounded()
     {
-        return true;
+        int grounded = 0;
+        rb2.Cast(Vector2.down, contacts, Mathf.Infinity);
+        foreach (RaycastHit2D contact in contacts)
+        {
+            if (contact)
+            {
+                if (contact.collider.CompareTag("Ground"))
+                {
+                    grounded++;
+                }
+            }
+        }
+        if (grounded > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public FacingDirection GetFacingDirection()
