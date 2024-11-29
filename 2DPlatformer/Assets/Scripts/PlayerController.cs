@@ -30,7 +30,9 @@ public class PlayerController : MonoBehaviour
     public bool jumpMaxed = false;
 
     public float terminalSpeed; //only gonna let them set this at the start of the program running to make it easier on myself
-    Vector2 deadSpeed;
+
+    public float coyoteTime;
+    float lastTimeTouchGrass;
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +41,6 @@ public class PlayerController : MonoBehaviour
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
         //ground = groundObject.GetComponent<Rigidbody2D>();
         //Debug.Log(ground.tag);
-        deadSpeed = new Vector2(0, terminalSpeed);
     }
 
     // Update is called once per frame
@@ -66,7 +67,8 @@ public class PlayerController : MonoBehaviour
         playerInput = new Vector2(playerInput.x * Speed * gravityDrag, playerInput.y);
 
         if (Input.GetKey(KeyCode.Space))
-        { 
+        {
+            //Debug.Log("time is: " + Time.time); coyotetime testing purposes
             if (apexHeight == 0)
             {
                 Debug.Log("please assign a maximum jump height in the player inspector");
@@ -75,13 +77,13 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("please assign a time required to reach maximum jump height in the player inspector");
             }
-            if (IsGrounded())
+            if (IsGrounded() || Time.time - lastTimeTouchGrass < coyoteTime)
             {
                 rb2.gravityScale = 0f;
                 jumpStart = rb2.position;
                 apexMax = new Vector2(0, apexHeight);
                 jumpMax = jumpStart + apexMax;
-                Debug.Log(jumpMax);
+                //Debug.Log(jumpMax);
                 jumpSpeed = new Vector2(0, apexHeight / apexTime);
                 playerInput = new Vector2 (playerInput.x, jumpSpeed.y);
             }
@@ -154,6 +156,7 @@ public class PlayerController : MonoBehaviour
 
         if (grounded > 0)
         {
+            lastTimeTouchGrass = Time.time;
             return true;
         }
         else
