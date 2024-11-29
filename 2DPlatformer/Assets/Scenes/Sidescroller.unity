@@ -1694,6 +1694,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 2
+  apexHeight: 2
+  apexTime: 2
+  jumpMaxed: 0
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0
