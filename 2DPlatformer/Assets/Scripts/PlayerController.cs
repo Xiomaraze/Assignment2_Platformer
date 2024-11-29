@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
     Vector2 jumpSpeed;
     public bool jumpMaxed = false;
 
+    public float terminalSpeed; //only gonna let them set this at the start of the program running to make it easier on myself
+    Vector2 deadSpeed;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +39,7 @@ public class PlayerController : MonoBehaviour
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
         //ground = groundObject.GetComponent<Rigidbody2D>();
         //Debug.Log(ground.tag);
+        deadSpeed = new Vector2(0, terminalSpeed);
     }
 
     // Update is called once per frame
@@ -57,11 +62,12 @@ public class PlayerController : MonoBehaviour
         {
             playerInput = new Vector2(0, playerInput.y);
         }
+
         playerInput = new Vector2(playerInput.x * Speed * gravityDrag, playerInput.y);
 
         if (Input.GetKey(KeyCode.Space))
         { 
-            if (apexHeight == 0) //not me out here giving the program a hernia because i forgot to assign these for testing
+            if (apexHeight == 0)
             {
                 Debug.Log("please assign a maximum jump height in the player inspector");
             }
@@ -107,7 +113,17 @@ public class PlayerController : MonoBehaviour
         Vector2 leftright = new Vector2(moveInput.x, 0);
         rb2.AddForce(leftright);
         Vector2 jump = new Vector2(0, moveInput.y);
+        if (jump.y < 0f && rb2.velocity.y < terminalSpeed)
+        {
+            jump = Vector2.zero;
+            rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
+        }
+        if (rb2.velocity.y < terminalSpeed)
+        {
+            rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
+        }
         rb2.AddForce(jump, ForceMode2D.Impulse);
+        
     }
 
     public bool IsWalking()
