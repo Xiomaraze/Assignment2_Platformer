@@ -12,13 +12,14 @@ public class PlayerVisuals : MonoBehaviour
     public SpriteRenderer bodyRenderer;
     public PlayerController playerController;
 
-    private int isWalkingHash, isGroundedHash;
+    private int isWalkingHash, isGroundedHash, isDyingHash;
 
     // Start is called before the first frame update
     void Start()
     {
         isWalkingHash = Animator.StringToHash("IsWalking");
         isGroundedHash = Animator.StringToHash("IsGrounded");
+        isDyingHash = Animator.StringToHash("IsDying");
     }
 
     // Update is called once per frame

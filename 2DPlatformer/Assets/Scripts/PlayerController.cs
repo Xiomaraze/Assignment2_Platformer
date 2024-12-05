@@ -165,6 +165,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool IsDying()
+    {
+        return false;
+    }
+
     public FacingDirection GetFacingDirection()
     {
         if (IsWalking() && rb2.velocity.x < 0)
