@@ -11,6 +11,11 @@ public class PlayerController : MonoBehaviour
     {
         left, right
     }
+    public enum CharacterState
+    {
+        idle, walking, jumping, dead
+    }
+    private CharacterState currentState = CharacterState.idle;
 
     Rigidbody2D rb2;
     BoxCollider2D playerCollider;
@@ -34,6 +39,18 @@ public class PlayerController : MonoBehaviour
     public float coyoteTime;
     float lastTimeTouchGrass;
 
+    public float health;
+
+    public float maxDash;
+    public float dashSpeed;
+    int currentDash;
+    public float dashDistance;
+    float curDashDist;
+    bool dashing;
+    Vector2 dashRight;
+    Vector2 dashLeft;
+    Vector2 storedVelocity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +58,14 @@ public class PlayerController : MonoBehaviour
         playerCollider = gameObject.GetComponent<BoxCollider2D>();
         //ground = groundObject.GetComponent<Rigidbody2D>();
         //Debug.Log(ground.tag);
+        health = 1; //yes its silly low because damage numbers dont actually matter, just the living and dead states
+        storedVelocity = Vector2.zero;
+        //i cant be bothered to figure out how to set this during active runtime so here the dash is set right at start
+        dashRight = new Vector2(maxDash / dashSpeed * Time.deltaTime, 0);
+        dashLeft = new Vector2(maxDash / dashSpeed * Time.deltaTime * -1, 0);
     }
+
+    
 
     // Update is called once per frame
     void FixedUpdate()
@@ -90,6 +114,14 @@ public class PlayerController : MonoBehaviour
             else
             {
                 //nothing happens when trying to jump while in the air
+                //IT DOES NOW PAST ME
+                if (currentDash < maxDash)
+                {
+                    currentDash -= 1;
+                    storedVelocity = rb2.velocity;
+                    dashing = true;
+                    //SET SOMETHING FOR VELOCITY HERE, THE HEADACHE IS COMING BACK FUTURE ME
+                }
             }
         }
 
@@ -108,6 +140,20 @@ public class PlayerController : MonoBehaviour
         }
 
         MovementUpdate(playerInput);
+    }
+
+    void Climb()
+    {
+        //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
+    }
+
+    private void OnMouseDown()
+    {
+        if (health > 0)
+        {
+            health = 0;
+        }
+        else health = 1; //haha he can come back to life!
     }
 
     private void MovementUpdate(Vector2 moveInput)
@@ -166,8 +212,13 @@ public class PlayerController : MonoBehaviour
     }
 
     public bool IsDying()
-    {
-        return false;
+    { //i dont have a method to initiate this keely, do i just give him health? im gonna just give him health and a button to kill him
+
+        if (health > 0)
+        {
+            return false;
+        }
+        else { return true; }
     }
 
     public FacingDirection GetFacingDirection()
@@ -181,5 +232,22 @@ public class PlayerController : MonoBehaviour
             return FacingDirection.right;
         }
         else return FacingDirection.right;
+    }
+
+    public CharacterState GetCharacterState()
+    {
+        if (IsDying())
+        {
+            return CharacterState.dead;
+        }
+        if (IsWalking() && IsGrounded())
+        {
+            return CharacterState.walking;
+        }
+        if (IsWalking() && !IsGrounded())
+        {
+            return CharacterState.jumping;
+        }
+        else return CharacterState.idle;
     }
 }

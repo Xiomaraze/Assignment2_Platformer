@@ -33,6 +33,7 @@ public class PlayerVisuals : MonoBehaviour
     {
         animator.SetBool(isWalkingHash, playerController.IsWalking());
         animator.SetBool(isGroundedHash, playerController.IsGrounded());
+        animator.SetBool(isDyingHash, playerController.IsDying());
         switch (playerController.GetFacingDirection())
         {
             case PlayerController.FacingDirection.left:
@@ -41,6 +42,21 @@ public class PlayerVisuals : MonoBehaviour
             case PlayerController.FacingDirection.right:
             default:
                 bodyRenderer.flipX = false;
+                break;
+        }
+        switch (playerController.GetCharacterState())
+        {
+            case PlayerController.CharacterState.idle:
+                //something
+                break;
+            case PlayerController.CharacterState.walking:
+                //somehting else
+                break;
+            case PlayerController.CharacterState.jumping:
+                //something else still
+                break;
+            case PlayerController.CharacterState.dead:
+                //last other thing
                 break;
         }
     }
