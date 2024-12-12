@@ -20,6 +20,7 @@ public class PlayerVisuals : MonoBehaviour
         isWalkingHash = Animator.StringToHash("IsWalking");
         isGroundedHash = Animator.StringToHash("IsGrounded");
         isDyingHash = Animator.StringToHash("IsDying");
+        isIdleHash = Animator.StringToHash("IsDying");
     }
 
     // Update is called once per frame
@@ -48,16 +49,16 @@ public class PlayerVisuals : MonoBehaviour
         switch (playerController.GetCharacterState())
         {
             case PlayerController.CharacterState.idle:
-                animator.CrossFade(isIdleHash, 0f);
+                //animator.CrossFade(isIdleHash, 0f);
                 break;
             case PlayerController.CharacterState.walking:
-                animator.CrossFade(isWalkingHash, 0f);
+                //animator.CrossFade(isWalkingHash, 0f);
                 break;
             case PlayerController.CharacterState.jumping:
-                animator.CrossFade(isGroundedHash, 0f);
+                //animator.CrossFade(isGroundedHash, 0f);
                 break;
             case PlayerController.CharacterState.dead:
-                animator.CrossFade(isDyingHash, 0f);
+                //animator.CrossFade(isDyingHash, 0f);
                 break;
         }
     }

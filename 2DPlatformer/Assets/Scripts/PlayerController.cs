@@ -15,7 +15,6 @@ public class PlayerController : MonoBehaviour
     {
         idle, walking, jumping, dead
     }
-    private CharacterState currentState = CharacterState.idle;
     private int isWalkingHash, isGroundedHash, isDyingHash, isIdleHash;
 
     Rigidbody2D rb2;
@@ -42,7 +41,7 @@ public class PlayerController : MonoBehaviour
 
     public float health;
 
-    public float maxDash;
+    public int maxDash;
     float dashSpeed;
     int currentDash;
     public float dashDistance;
@@ -123,13 +122,13 @@ public class PlayerController : MonoBehaviour
                 //IT DOES NOW PAST ME
                 if (currentDash < maxDash)
                 {
-                    currentDash -= 1;
                     storedVelocity = rb2.velocity;
                     if (!dashing)
                     {
                         dashStart = rb2.position;
                         rb2.gravityScale = 0;
                         dashing = true; //I dont remember why (i remember now)
+                        currentDash -= 1;
                         if (GetFacingDirection() == FacingDirection.left)
                         {
                             rb2.velocity = dashLeft;
@@ -148,10 +147,10 @@ public class PlayerController : MonoBehaviour
                             dashing = false;
                             rb2.gravityScale = 1;
                             dashStart = Vector2.zero;
+                            rb2.velocity = storedVelocity;
                         }
                     }
                     //SET SOMETHING FOR VELOCITY HERE, THE HEADACHE IS COMING BACK FUTURE ME
-
                 }
             }
         }
@@ -166,6 +165,7 @@ public class PlayerController : MonoBehaviour
                     rb2.gravityScale = 1f;
                     rb2.velocity = new Vector2(rb2.velocity.x, 0f);
                     playerInput = new Vector2(playerInput.x, 0f);
+                    currentDash = maxDash;
                 }
             }
         }
@@ -177,10 +177,86 @@ public class PlayerController : MonoBehaviour
         MovementUpdate(playerInput);
     }
 
+    // i should put this with the rest of the global variables but im feelign lazy and i never know when my pc is gonna crash agian and lose my progress
+    Vector2 climbStart = Vector2.zero;
+    public float climbTime;
+    public float climbDistance;
+    Vector2 climbSpeed;
+
     void Climb()
     {
+
+        climbSpeed = new Vector2(0, (climbDistance / climbTime));
         //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
+        //woop woop gonna do a wall check just like i did the ground check
+        int wall = 0;
+        if (climbStart != Vector2.zero)
+        {
+            if (Input.GetKey(KeyCode.A))
+            {
+                rb2.Cast(Vector2.left, contacts);
+                
+            }
+            else
+            {
+                rb2.Cast(Vector2.right, contacts);
+                foreach (RaycastHit2D contact in contacts)
+                {
+                    if (contact)
+                    {
+                        if (contact.collider.CompareTag("Ground"))
+                        {
+                            if (contact.distance < 0.5f)
+                            {
+                                wall++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (wall > 0)
+            {
+                climbStart = rb2.position;
+                rb2.gravityScale = 0;
+                rb2.velocity = climbSpeed;
+            }
+        }
+        else
+        {
+            if ((rb2.position - climbStart).y >= climbDistance)
+            {
+                rb2.gravityScale = 1;
+                climbStart = Vector2.zero;
+                rb2.velocity = new Vector2(rb2.velocity.x, 0);
+            }
+        }
+
     }
+    //public bool IsGrounded()
+    //{//jumping complicates things huh
+    //    int grounded = 0;
+    //    rb2.Cast(Vector2.down, contacts);
+    //    foreach (RaycastHit2D contact in contacts)
+    //    {
+    //        if (contact)
+    //        {
+    //            if (contact.collider.CompareTag("Ground"))
+    //            {
+    //                if (contact.distance < 0.01f) { grounded++; } //finally got the jump height to work right by checking if the distance between the collider and the raycast hit is absolutely miniscule
+    //            }
+    //        }
+    //    }
+
+    //    if (grounded > 0)
+    //    {
+    //        lastTimeTouchGrass = Time.time;
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
     private void OnMouseDown()
     {
