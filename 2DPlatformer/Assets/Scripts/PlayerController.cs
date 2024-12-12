@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     public float health;
 
     public int maxDash;
-    float dashSpeed;
+    public float dashTime;
     int currentDash;
     public float dashDistance;
     float curDashDist;
@@ -66,8 +66,8 @@ public class PlayerController : MonoBehaviour
         //isDyingHash = Animator.StringToHash("IsDying");
         //isIdleHash = Animator.StringToHash("IsIdle");
         //i cant be bothered to figure out how to set this during active runtime so here the dash is set right at start
-        dashRight = new Vector2(maxDash / dashSpeed * Time.deltaTime, 0);
-        dashLeft = new Vector2(maxDash / dashSpeed * Time.deltaTime * -1, 0);
+        dashRight = new Vector2(dashDistance / dashTime * Time.deltaTime, 0);
+        dashLeft = new Vector2(dashDistance / dashTime * Time.deltaTime * -1, 0);
     }
 
     
@@ -77,6 +77,11 @@ public class PlayerController : MonoBehaviour
     {
         //The input from the player needs to be determined and then passed in the to the MovementUpdate which should
         //manage the actual movement of the character.
+        //if ((dashRight.magnitude > 200) || (dashLeft.magnitude > 200))
+        //{
+        //    Debug.Log("Hey don't break the laws of physics");
+        //    Debug.Log(dashDistance/dashTime);
+        //}
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -106,13 +111,14 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("please assign a time required to reach maximum jump height in the player inspector");
             }
-            if (IsGrounded() || Time.time - lastTimeTouchGrass < coyoteTime)
+            if //(IsGrounded() || Time.time - lastTimeTouchGrass < coyoteTime)
+                (IsGrounded())
             {
                 rb2.gravityScale = 0f;
                 jumpStart = rb2.position;
                 apexMax = new Vector2(0, apexHeight);
                 jumpMax = jumpStart + apexMax;
-                //Debug.Log(jumpMax);
+                Debug.Log(jumpMax);
                 jumpSpeed = new Vector2(0, apexHeight / apexTime);
                 playerInput = new Vector2 (playerInput.x, jumpSpeed.y);
             }
@@ -159,20 +165,29 @@ public class PlayerController : MonoBehaviour
         {
             if (rb2.velocity.y > 0f) // checks if the player is moving upwards
             {
-                if (jumpMax.y <= rb2.position.y) //checks if the player has reached the max jump height based on where they started their jump
+                //Debug.Log(rb2.velocity.y);
+                if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
                 {
                     jumpMaxed = true;
                     rb2.gravityScale = 1f;
                     rb2.velocity = new Vector2(rb2.velocity.x, 0f);
                     playerInput = new Vector2(playerInput.x, 0f);
-                    currentDash = maxDash;
                 }
             }
+            if (currentDash > 0)
+            {
+                //stuff here for the dash distance update
+            }
         }
-        if (IsDying())
+        else
         {
-
+            jumpMaxed = false;
+            jumpMax = Vector2.zero;
         }
+        //if (IsDying())
+        //{
+
+        //}
 
         MovementUpdate(playerInput);
     }
@@ -183,79 +198,66 @@ public class PlayerController : MonoBehaviour
     public float climbDistance;
     Vector2 climbSpeed;
 
-    void Climb()
-    {
+    //void Climb()
+    //{
 
-        climbSpeed = new Vector2(0, (climbDistance / climbTime));
-        //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
-        //woop woop gonna do a wall check just like i did the ground check
-        int wall = 0;
-        if (climbStart != Vector2.zero)
-        {
-            if (Input.GetKey(KeyCode.A))
-            {
-                rb2.Cast(Vector2.left, contacts);
-                
-            }
-            else
-            {
-                rb2.Cast(Vector2.right, contacts);
-                foreach (RaycastHit2D contact in contacts)
-                {
-                    if (contact)
-                    {
-                        if (contact.collider.CompareTag("Ground"))
-                        {
-                            if (contact.distance < 0.5f)
-                            {
-                                wall++;
-                            }
-                        }
-                    }
-                }
-            }
-            if (wall > 0)
-            {
-                climbStart = rb2.position;
-                rb2.gravityScale = 0;
-                rb2.velocity = climbSpeed;
-            }
-        }
-        else
-        {
-            if ((rb2.position - climbStart).y >= climbDistance)
-            {
-                rb2.gravityScale = 1;
-                climbStart = Vector2.zero;
-                rb2.velocity = new Vector2(rb2.velocity.x, 0);
-            }
-        }
-
-    }
-    //public bool IsGrounded()
-    //{//jumping complicates things huh
-    //    int grounded = 0;
-    //    rb2.Cast(Vector2.down, contacts);
-    //    foreach (RaycastHit2D contact in contacts)
+    //    climbSpeed = new Vector2(0, (climbDistance / climbTime));
+    //    //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
+    //    //woop woop gonna do a wall check just like i did the ground check
+    //    int wall = 0;
+    //    if (climbStart != Vector2.zero)
     //    {
-    //        if (contact)
+    //        if (Input.GetKey(KeyCode.A))
     //        {
-    //            if (contact.collider.CompareTag("Ground"))
+    //            rb2.Cast(Vector2.left, contacts);
+    //            foreach (RaycastHit2D contact in contacts)
     //            {
-    //                if (contact.distance < 0.01f) { grounded++; } //finally got the jump height to work right by checking if the distance between the collider and the raycast hit is absolutely miniscule
+    //                if (contact)
+    //                {
+    //                    if (contact.collider.CompareTag("Ground"))
+    //                    {
+    //                        if (contact.distance < 0.5f)
+    //                        {
+    //                            wall++;
+    //                        }
+    //                    }
+    //                }
     //            }
     //        }
-    //    }
-
-    //    if (grounded > 0)
-    //    {
-    //        lastTimeTouchGrass = Time.time;
-    //        return true;
+    //        else
+    //        {
+    //            rb2.Cast(Vector2.right, contacts);
+    //            foreach (RaycastHit2D contact in contacts)
+    //            {
+    //                if (contact)
+    //                {
+    //                    if (contact.collider.CompareTag("Ground"))
+    //                    {
+    //                        if (contact.distance < 0.5f)
+    //                        {
+    //                            wall++;
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        if (wall > 0)
+    //        {
+    //            climbStart = rb2.position;
+    //            rb2.gravityScale = 0;
+    //            rb2.velocity = climbSpeed;
+    //        }
     //    }
     //    else
     //    {
-    //        return false;
+    //        if ((rb2.position - climbStart).y >= climbDistance)
+    //        {
+    //            rb2.gravityScale = 1;
+    //            climbStart = Vector2.zero;
+    //            rb2.velocity = new Vector2(rb2.velocity.x, 0);
+    //        }
     //    }
+
     //}
 
     private void OnMouseDown()
