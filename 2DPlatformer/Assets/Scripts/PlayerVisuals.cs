@@ -51,13 +51,13 @@ public class PlayerVisuals : MonoBehaviour
                 animator.CrossFade(isIdleHash, 0f);
                 break;
             case PlayerController.CharacterState.walking:
-                //somehting els
+                animator.CrossFade(isWalkingHash, 0f);
                 break;
             case PlayerController.CharacterState.jumping:
-                //something else still
+                animator.CrossFade(isGroundedHash, 0f);
                 break;
             case PlayerController.CharacterState.dead:
-                //last other thing
+                animator.CrossFade(isDyingHash, 0f);
                 break;
         }
     }
