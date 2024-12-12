@@ -1698,7 +1698,7 @@ MonoBehaviour:
   apexTime: 5
   jumpMaxed: 0
   terminalSpeed: 5
-  coyoteTime: 1
+  coyoteTime: 0.1
   health: 1
   maxDash: 3
   dashTime: 2

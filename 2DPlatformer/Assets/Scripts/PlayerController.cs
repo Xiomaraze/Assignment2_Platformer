@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     Vector2 jumpMax;
     public float apexTime;
     Vector2 jumpSpeed;
-    public bool jumpMaxed = false;
+    //bool jumpMaxed = false;
 
     public float terminalSpeed; //only gonna let them set this at the start of the program running to make it easier on myself
 
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
                 jumpStart = rb2.position;
                 apexMax = new Vector2(0, apexHeight);
                 jumpMax = jumpStart + apexMax;
-                Debug.Log(jumpMax);
+                //Debug.Log(jumpMax);
                 jumpSpeed = new Vector2(0, apexHeight / apexTime);
                 playerInput = new Vector2 (playerInput.x, jumpSpeed.y);
             }
@@ -161,29 +161,29 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (!IsGrounded()) //checks if the player is touching the ground
-        {
-            if (rb2.velocity.y > 0f) // checks if the player is moving upwards
-            {
-                //Debug.Log(rb2.velocity.y);
-                if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
-                {
-                    jumpMaxed = true;
-                    rb2.gravityScale = 1f;
-                    rb2.velocity = new Vector2(rb2.velocity.x, 0f);
-                    playerInput = new Vector2(playerInput.x, 0f);
-                }
-            }
-            if (currentDash > 0)
-            {
-                //stuff here for the dash distance update
-            }
-        }
-        else
-        {
-            jumpMaxed = false;
-            jumpMax = Vector2.zero;
-        }
+        //if (!IsGrounded()) //checks if the player is touching the ground
+        //{
+        //    if (rb2.velocity.y > 0f) // checks if the player is moving upwards
+        //    {
+        //        //Debug.Log(rb2.velocity.y);
+        //        if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
+        //        {
+        //            //jumpMaxed = true;
+        //            rb2.gravityScale = 1f;
+        //            rb2.velocity = new Vector2(rb2.velocity.x, 0f);
+        //            playerInput = new Vector2(playerInput.x, 0f);
+        //        }
+        //    }
+        //    if (currentDash > 0)
+        //    {
+        //        //stuff here for the dash distance update
+        //    }
+        //}
+        //else
+        //{
+        //    //jumpMaxed = false;
+        //    jumpMax = Vector2.zero;
+        //}
         //if (IsDying())
         //{
 
@@ -197,68 +197,86 @@ public class PlayerController : MonoBehaviour
     public float climbTime;
     public float climbDistance;
     Vector2 climbSpeed;
+    public bool climbing = false;
+    float curClimbDist;
 
-    //void Climb()
-    //{
+    Vector2 Climb()
+    {
 
-    //    climbSpeed = new Vector2(0, (climbDistance / climbTime));
-    //    //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
-    //    //woop woop gonna do a wall check just like i did the ground check
-    //    int wall = 0;
-    //    if (climbStart != Vector2.zero)
-    //    {
-    //        if (Input.GetKey(KeyCode.A))
-    //        {
-    //            rb2.Cast(Vector2.left, contacts);
-    //            foreach (RaycastHit2D contact in contacts)
-    //            {
-    //                if (contact)
-    //                {
-    //                    if (contact.collider.CompareTag("Ground"))
-    //                    {
-    //                        if (contact.distance < 0.5f)
-    //                        {
-    //                            wall++;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        else
-    //        {
-    //            rb2.Cast(Vector2.right, contacts);
-    //            foreach (RaycastHit2D contact in contacts)
-    //            {
-    //                if (contact)
-    //                {
-    //                    if (contact.collider.CompareTag("Ground"))
-    //                    {
-    //                        if (contact.distance < 0.5f)
-    //                        {
-    //                            wall++;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        if (wall > 0)
-    //        {
-    //            climbStart = rb2.position;
-    //            rb2.gravityScale = 0;
-    //            rb2.velocity = climbSpeed;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if ((rb2.position - climbStart).y >= climbDistance)
-    //        {
-    //            rb2.gravityScale = 1;
-    //            climbStart = Vector2.zero;
-    //            rb2.velocity = new Vector2(rb2.velocity.x, 0);
-    //        }
-    //    }
+        climbSpeed = new Vector2(0, (climbDistance / climbTime));
+        //CODING FOR WALL CHECK AND CLIMB TIME IS HERE
+        //woop woop gonna do a wall check just like i did the ground check
+        int wall = 0;
+        if (climbStart == Vector2.zero)
+        {
+            //Debug.Log("Can climb?");
+            if (!climbing)
+            {
+                if (Input.GetKey(KeyCode.A))
+                {
+                    rb2.Cast(Vector2.left, contacts);
+                    foreach (RaycastHit2D contact in contacts)
+                    {
+                        if (contact)
+                        {
+                            if (contact.collider.CompareTag("Ground"))
+                            {
+                                if (contact.distance < 0.05f)
+                                {
+                                    wall++;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (Input.GetKey(KeyCode.D))
+                {
+                    rb2.Cast(Vector2.right, contacts);
+                    foreach (RaycastHit2D contact in contacts)
+                    {
+                        if (contact)
+                        {
+                            if (contact.collider.CompareTag("Ground"))
+                            {
+                                if (contact.distance < 0.05f)
+                                {
+                                    wall++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //Debug.Log(climbStart);
+            }
+            if (wall > 0)
+            {
+                climbStart = rb2.position;
+                climbing = true;
+            }
+            else { climbing = false; }
+        }
+        else //if there is a climb start already set, check the distance the player has climbed
+        {
+            curClimbDist = rb2.position.y - climbStart.y;
+            if (curClimbDist >= climbDistance)
+            {
+                climbing = false;
+            }
+        }
+        if (climbing)
+        {
+            return climbSpeed;
+        }
+        else
+        {
+            rb2.gravityScale = 1f;
+            return Vector2.zero;
+        }
 
-    //}
+    }
 
     private void OnMouseDown()
     {
@@ -271,6 +289,7 @@ public class PlayerController : MonoBehaviour
 
     private void MovementUpdate(Vector2 moveInput)
     {
+        Debug.Log(moveInput);
         Vector2 leftright = new Vector2(moveInput.x, 0);
         rb2.AddForce(leftright);
         Vector2 jump = new Vector2(0, moveInput.y);
@@ -279,12 +298,28 @@ public class PlayerController : MonoBehaviour
             jump = Vector2.zero;
             rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
         }
-        if (rb2.velocity.y < terminalSpeed)
+        if (rb2.velocity.y > terminalSpeed)
         {
             rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
         }
         rb2.AddForce(jump, ForceMode2D.Impulse);
-        
+        Vector2 clmb = Climb();
+        if (clmb.y > 0)
+        {
+            //add nothing to the forces
+            if (climbing && rb2.velocity.y != clmb.y)
+            {
+                //i dont know why I keep stopping but here we go, add that damn boost
+                rb2.AddForce(clmb, ForceMode2D.Impulse);
+            }
+        }
+        else
+        {
+            //if (!IsGrounded())
+            //{
+            //    rb2.gravityScale = 1f;
+            //}
+        }
     }
     public bool IsIdle()
     {
@@ -323,6 +358,7 @@ public class PlayerController : MonoBehaviour
 
         if (grounded > 0)
         {
+            climbStart = Vector2.zero;
             lastTimeTouchGrass = Time.time;
             return true;
         }
