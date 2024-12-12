@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
         idle, walking, jumping, dead
     }
     private CharacterState currentState = CharacterState.idle;
+    private int isWalkingHash, isGroundedHash, isDyingHash, isIdleHash;
 
     Rigidbody2D rb2;
     BoxCollider2D playerCollider;
@@ -42,10 +43,11 @@ public class PlayerController : MonoBehaviour
     public float health;
 
     public float maxDash;
-    public float dashSpeed;
+    float dashSpeed;
     int currentDash;
     public float dashDistance;
     float curDashDist;
+    Vector2 dashStart;
     bool dashing;
     Vector2 dashRight;
     Vector2 dashLeft;
@@ -60,6 +62,10 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(ground.tag);
         health = 1; //yes its silly low because damage numbers dont actually matter, just the living and dead states
         storedVelocity = Vector2.zero;
+        //isWalkingHash = Animator.StringToHash("IsWalking");
+        //isGroundedHash = Animator.StringToHash("IsGrounded");
+        //isDyingHash = Animator.StringToHash("IsDying");
+        //isIdleHash = Animator.StringToHash("IsIdle");
         //i cant be bothered to figure out how to set this during active runtime so here the dash is set right at start
         dashRight = new Vector2(maxDash / dashSpeed * Time.deltaTime, 0);
         dashLeft = new Vector2(maxDash / dashSpeed * Time.deltaTime * -1, 0);
@@ -119,8 +125,33 @@ public class PlayerController : MonoBehaviour
                 {
                     currentDash -= 1;
                     storedVelocity = rb2.velocity;
-                    dashing = true;
+                    if (!dashing)
+                    {
+                        dashStart = rb2.position;
+                        rb2.gravityScale = 0;
+                        dashing = true; //I dont remember why (i remember now)
+                        if (GetFacingDirection() == FacingDirection.left)
+                        {
+                            rb2.velocity = dashLeft;
+                        }
+                        else
+                        {
+                            rb2.velocity = dashRight;
+                        }
+                    }
+                    else
+                    {
+                        Vector2 tempHolder = dashStart - rb2.position;
+                        curDashDist = Mathf.Abs(tempHolder.x);
+                        if (curDashDist >= maxDash)
+                        {
+                            dashing = false;
+                            rb2.gravityScale = 1;
+                            dashStart = Vector2.zero;
+                        }
+                    }
                     //SET SOMETHING FOR VELOCITY HERE, THE HEADACHE IS COMING BACK FUTURE ME
+
                 }
             }
         }
@@ -137,6 +168,10 @@ public class PlayerController : MonoBehaviour
                     playerInput = new Vector2(playerInput.x, 0f);
                 }
             }
+        }
+        if (IsDying())
+        {
+
         }
 
         MovementUpdate(playerInput);
@@ -172,6 +207,14 @@ public class PlayerController : MonoBehaviour
         }
         rb2.AddForce(jump, ForceMode2D.Impulse);
         
+    }
+    public bool IsIdle()
+    {
+        if (rb2.velocity.magnitude == 0)
+        {
+            return true;
+        }
+        else {return false;}
     }
 
     public bool IsWalking()
