@@ -11,6 +11,7 @@ public class PlayerVisuals : MonoBehaviour
     public Animator animator;
     public SpriteRenderer bodyRenderer;
     public PlayerController playerController;
+    int layer;
 
     private int isWalkingHash, isGroundedHash, isDyingHash, isIdleHash;
 
@@ -49,16 +50,16 @@ public class PlayerVisuals : MonoBehaviour
         switch (playerController.GetCharacterState())
         {
             case PlayerController.CharacterState.idle:
-                //animator.CrossFade(isIdleHash, 0f);
+                animator.CrossFade(isIdleHash, 0f, 0);
                 break;
             case PlayerController.CharacterState.walking:
-                //animator.CrossFade(isWalkingHash, 0f);
+                animator.CrossFade(isWalkingHash, 0f, 0);
                 break;
             case PlayerController.CharacterState.jumping:
-                //animator.CrossFade(isGroundedHash, 0f);
+                animator.CrossFade(isGroundedHash, 0f, 0);
                 break;
             case PlayerController.CharacterState.dead:
-                //animator.CrossFade(isDyingHash, 0f);
+                animator.CrossFade(isDyingHash, 0f, 0);
                 break;
         }
     }

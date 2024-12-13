@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
         //isWalkingHash = Animator.StringToHash("IsWalking");
         //isGroundedHash = Animator.StringToHash("IsGrounded");
         //isDyingHash = Animator.StringToHash("IsDying");
-        //isIdleHash = Animator.StringToHash("IsIdle");
+        isIdleHash = Animator.StringToHash("IsIdle");
         //i cant be bothered to figure out how to set this during active runtime so here the dash is set right at start
         dashRight = new Vector2(dashDistance / dashTime * Time.deltaTime, 0);
         dashLeft = new Vector2(dashDistance / dashTime * Time.deltaTime * -1, 0);
@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour
                 //Debug.Log(rb2.velocity.y);
                 if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
                 {
-                    Debug.Log(true);
+                    //Debug.Log(true);
                     //jumpMaxed = true;
                     rb2.gravityScale = 1f;
                     rb2.velocity = new Vector2(rb2.velocity.x, 0f);
@@ -399,7 +399,7 @@ public class PlayerController : MonoBehaviour
         {
             climbStart = Vector2.zero;
             lastTimeTouchGrass = Time.time;
-            Debug.Log(true);
+            //Debug.Log(true);
             return true;
         }
         else
