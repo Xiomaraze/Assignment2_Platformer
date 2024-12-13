@@ -161,29 +161,29 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        //if (!IsGrounded()) //checks if the player is touching the ground
-        //{
-        //    if (rb2.velocity.y > 0f) // checks if the player is moving upwards
-        //    {
-        //        //Debug.Log(rb2.velocity.y);
-        //        if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
-        //        {
-        //            //jumpMaxed = true;
-        //            rb2.gravityScale = 1f;
-        //            rb2.velocity = new Vector2(rb2.velocity.x, 0f);
-        //            playerInput = new Vector2(playerInput.x, 0f);
-        //        }
-        //    }
-        //    if (currentDash > 0)
-        //    {
-        //        //stuff here for the dash distance update
-        //    }
-        //}
-        //else
-        //{
-        //    //jumpMaxed = false;
-        //    jumpMax = Vector2.zero;
-        //}
+        if (!IsGrounded()) //checks if the player is touching the ground
+        {
+            if (rb2.velocity.y > 0f) // checks if the player is moving upwards
+            {
+                //Debug.Log(rb2.velocity.y);
+                if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
+                {
+                    //jumpMaxed = true;
+                    rb2.gravityScale = 1f;
+                    rb2.velocity = new Vector2(rb2.velocity.x, 0f);
+                    playerInput = new Vector2(playerInput.x, 0f);
+                }
+            }
+            if (currentDash > 0)
+            {
+                //stuff here for the dash distance update
+            }
+        }
+        else
+        {
+            //jumpMaxed = false;
+            jumpMax = Vector2.zero;
+        }
         //if (IsDying())
         //{
 
