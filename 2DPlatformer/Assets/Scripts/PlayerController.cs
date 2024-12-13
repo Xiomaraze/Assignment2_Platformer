@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
     Vector2 dashRight;
     Vector2 dashLeft;
     Vector2 storedVelocity;
+    public bool reverse;
 
     // Start is called before the first frame update
     void Start()
@@ -116,11 +117,22 @@ public class PlayerController : MonoBehaviour
             {
                 rb2.gravityScale = 0f;
                 jumpStart = rb2.position;
-                apexMax = new Vector2(0, apexHeight);
-                jumpMax = jumpStart + apexMax;
-                //Debug.Log(jumpMax);
-                jumpSpeed = new Vector2(0, apexHeight / apexTime);
-                playerInput = new Vector2 (playerInput.x, jumpSpeed.y);
+                if (!reverse)
+                {
+                    apexMax = new Vector2(0, apexHeight);
+                    jumpMax = jumpStart + apexMax;
+                    //Debug.Log(jumpMax);
+                    jumpSpeed = new Vector2(0, apexHeight / apexTime);
+                    playerInput = new Vector2(playerInput.x, jumpSpeed.y);
+                }
+                else
+                {
+                    apexMax = new Vector2(0, apexHeight * -1);
+                    jumpMax = jumpStart + apexMax;
+                    //Debug.Log(jumpMax);
+                    jumpSpeed = new Vector2(0, apexHeight / apexTime * -1);
+                    playerInput = new Vector2(playerInput.x, jumpSpeed.y);
+                }
             }
             else
             {
@@ -163,21 +175,32 @@ public class PlayerController : MonoBehaviour
 
         if (!IsGrounded()) //checks if the player is touching the ground
         {
-            if (rb2.velocity.y > 0f) // checks if the player is moving upwards
+            if ((rb2.velocity.y > 0f) && !reverse) // checks if the player is moving upwards and gravity Isnt reversed
             {
                 //Debug.Log(rb2.velocity.y);
                 if (jumpMax.y <= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
                 {
+                    Debug.Log(true);
                     //jumpMaxed = true;
                     rb2.gravityScale = 1f;
                     rb2.velocity = new Vector2(rb2.velocity.x, 0f);
                     playerInput = new Vector2(playerInput.x, 0f);
                 }
             }
-            if (currentDash > 0)
+            else if ((rb2.velocity.y < 0f) && reverse)
             {
-                //stuff here for the dash distance update
+                if (jumpMax.y >= (rb2.position.y)) //checks if the player has reached the max jump height based on where they started their jump
+                {
+                    //jumpMaxed = true;
+                    rb2.gravityScale = -1f;
+                    rb2.velocity = new Vector2(rb2.velocity.x, 0f);
+                    playerInput = new Vector2(playerInput.x, 0f);
+                }
             }
+            //if (currentDash > 0)
+            //{
+            //    //stuff here for the dash distance update
+            //}
         }
         else
         {
@@ -270,6 +293,11 @@ public class PlayerController : MonoBehaviour
         {
             return climbSpeed;
         }
+        else if (reverse)
+        {
+            rb2.gravityScale = -1f;
+            return Vector2.zero;
+        }
         else
         {
             rb2.gravityScale = 1f;
@@ -293,14 +321,14 @@ public class PlayerController : MonoBehaviour
         Vector2 leftright = new Vector2(moveInput.x, 0);
         rb2.AddForce(leftright);
         Vector2 jump = new Vector2(0, moveInput.y);
-        if (jump.y < 0f && rb2.velocity.y < terminalSpeed)
+        if (jump.y < 0f && rb2.velocity.y < terminalSpeed && !reverse)
         {
             jump = Vector2.zero;
             rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
         }
-        if (rb2.velocity.y > terminalSpeed)
+        else if (jump.y > 0f && rb2.velocity.y > terminalSpeed * -1 && reverse)
         {
-            rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed);
+            rb2.velocity = Vector2.ClampMagnitude(rb2.velocity, terminalSpeed * -1);
         }
         rb2.AddForce(jump, ForceMode2D.Impulse);
         Vector2 clmb = Climb();
@@ -344,7 +372,14 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded()
     {//jumping complicates things huh
         int grounded = 0;
-        rb2.Cast(Vector2.down, contacts);
+        if (!reverse)
+        {
+            rb2.Cast(Vector2.down, contacts);
+        }
+        else
+        {
+            rb2.Cast(Vector2.up, contacts);
+        }
         foreach (RaycastHit2D contact in contacts)
         {
             if (contact)
@@ -353,6 +388,10 @@ public class PlayerController : MonoBehaviour
                 {
                     if (contact.distance < 0.01f) { grounded++; } //finally got the jump height to work right by checking if the distance between the collider and the raycast hit is absolutely miniscule
                 }
+                else if (contact.collider.CompareTag("Ceiling"))
+                {
+                    if (contact.distance < 0.05f) { grounded++; }
+                }
             }
         }
 
@@ -360,6 +399,7 @@ public class PlayerController : MonoBehaviour
         {
             climbStart = Vector2.zero;
             lastTimeTouchGrass = Time.time;
+            Debug.Log(true);
             return true;
         }
         else
