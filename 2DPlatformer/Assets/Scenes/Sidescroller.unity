@@ -241,7 +241,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1598075210}
@@ -287,7 +287,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 444663372, guid: 87f14ff9617bc0145b04ce03190047be, type: 3}
+  m_Sprite: {fileID: 578753080, guid: 234c718ca8e83e7418f3edb243b94f6f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1668,7 +1668,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1433354312}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7b3082dd195ff834f9abfa5c9be551a8, type: 2}
   m_CullingMode: 0
@@ -1695,10 +1695,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 2
   apexHeight: 2
-  apexTime: 2
+  apexTime: 5
   jumpMaxed: 0
   terminalSpeed: 5
-  coyoteTime: 0
+  coyoteTime: 0.1
+  health: 1
+  maxDash: 3
+  dashTime: 2
+  dashDistance: 5
+  climbTime: 3
+  climbDistance: 2
 --- !u!4 &1433354315
 Transform:
   m_ObjectHideFlags: 0
@@ -1708,7 +1714,7 @@ Transform:
   m_GameObject: {fileID: 1433354312}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: -2, z: 0}
+  m_LocalPosition: {x: -5.73, y: -1.68, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

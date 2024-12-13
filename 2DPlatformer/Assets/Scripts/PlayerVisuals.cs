@@ -12,7 +12,7 @@ public class PlayerVisuals : MonoBehaviour
     public SpriteRenderer bodyRenderer;
     public PlayerController playerController;
 
-    private int isWalkingHash, isGroundedHash, isDyingHash;
+    private int isWalkingHash, isGroundedHash, isDyingHash, isIdleHash;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +20,7 @@ public class PlayerVisuals : MonoBehaviour
         isWalkingHash = Animator.StringToHash("IsWalking");
         isGroundedHash = Animator.StringToHash("IsGrounded");
         isDyingHash = Animator.StringToHash("IsDying");
+        isIdleHash = Animator.StringToHash("IsDying");
     }
 
     // Update is called once per frame
@@ -33,6 +34,8 @@ public class PlayerVisuals : MonoBehaviour
     {
         animator.SetBool(isWalkingHash, playerController.IsWalking());
         animator.SetBool(isGroundedHash, playerController.IsGrounded());
+        animator.SetBool(isDyingHash, playerController.IsDying());
+        animator.SetBool(isIdleHash, playerController.IsIdle());
         switch (playerController.GetFacingDirection())
         {
             case PlayerController.FacingDirection.left:
@@ -41,6 +44,21 @@ public class PlayerVisuals : MonoBehaviour
             case PlayerController.FacingDirection.right:
             default:
                 bodyRenderer.flipX = false;
+                break;
+        }
+        switch (playerController.GetCharacterState())
+        {
+            case PlayerController.CharacterState.idle:
+                //animator.CrossFade(isIdleHash, 0f);
+                break;
+            case PlayerController.CharacterState.walking:
+                //animator.CrossFade(isWalkingHash, 0f);
+                break;
+            case PlayerController.CharacterState.jumping:
+                //animator.CrossFade(isGroundedHash, 0f);
+                break;
+            case PlayerController.CharacterState.dead:
+                //animator.CrossFade(isDyingHash, 0f);
                 break;
         }
     }
