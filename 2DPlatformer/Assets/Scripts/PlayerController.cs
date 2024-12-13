@@ -289,7 +289,7 @@ public class PlayerController : MonoBehaviour
 
     private void MovementUpdate(Vector2 moveInput)
     {
-        Debug.Log(moveInput);
+       //Debug.Log(moveInput);
         Vector2 leftright = new Vector2(moveInput.x, 0);
         rb2.AddForce(leftright);
         Vector2 jump = new Vector2(0, moveInput.y);
